@@ -2,6 +2,8 @@ import { Command } from 'commander';
 import { text, isCancel } from '@clack/prompts';
 import { todo } from './todo';
 import { stamp } from './stamp';
+import { dayPlan } from './dayPlan';
+import { mealTimes } from './mealTimes';
 import { makeCompletionAction } from './completion';
 
 export { todo as defaultTask };
@@ -27,6 +29,12 @@ export async function registerCommands(program: Command) {
 		const trimmed = (label ?? '').trim();
 		stamp(trimmed || undefined, trimmed ? {} : { list: true });
 	});
+
+	program.command('day-plan').description('Plan your day interactively').action(dayPlan);
+	handlers.set('day-plan', dayPlan);
+
+	program.command('meal-times').description('Set meal time reminders for today').action(mealTimes);
+	handlers.set('meal-times', mealTimes);
 
 	try {
 		const { registerPrivateCommands } = await import('./private/index');

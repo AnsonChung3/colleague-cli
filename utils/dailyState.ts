@@ -1,11 +1,18 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { dirname } from 'path';
 
-// Shared date helper used across all time-sensitive commands.
-// Returns YYYY-MM-DD in ISO format — simple string comparison is enough to
-// detect a day boundary without any date arithmetic.
+// Shared date/time helpers used across all time-sensitive commands.
+// ISO string comparisons (YYYY-MM-DD, HH:MM) are intentionally used over
+// Date arithmetic — simpler, no timezone edge cases for local-time comparisons.
+
 export function today(): string {
   return new Date().toISOString().slice(0, 10);
+}
+
+// Returns current local time as HH:MM (24-hour, zero-padded)
+export function currentTime(): string {
+  const d = new Date();
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 }
 
 interface DailyRecord<T> {

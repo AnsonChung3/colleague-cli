@@ -2,11 +2,28 @@
 import { Command } from 'commander';
 import { intro, confirm, select, outro, isCancel } from '@clack/prompts';
 import { registerCommands, defaultTask, handlers } from './commands/index';
+import { getUnacknowledgedPastMeals, acknowledgeMeal } from './utils/dayPlanState';
 
 const program = new Command();
 program.name('colleague').description('Personal CLI').version('1.0.0');
 
 await registerCommands(program);
+
+// Single place to register all time-sensitive checks that should surface
+// on any CLI interaction. Add new checks here as the CLI grows.
+async function runTimeChecks(): Promise<void> {
+	// Meal reminders — prompt for each past unacknowledged meal.
+	// Only stops prompting once the user confirms they've eaten (acknowledged).
+	for (const meal of getUnacknowledgedPastMeals()) {
+		const eaten = await confirm({
+			message: `It's past your ${meal.label} time (${meal.time}). Have you eaten?`,
+			initialValue: true,
+		});
+		if (!isCancel(eaten) && eaten) {
+			acknowledgeMeal(meal.label);
+		}
+	}
+}
 
 program.action(async () => {
 	intro('Hey! Good to see you.');
@@ -38,6 +55,9 @@ program.action(async () => {
 		}));
 
 	while (true) {
+		// Run time-sensitive checks before every menu interaction
+		await runTimeChecks();
+
 		const choice = await select({
 			message: 'What would you like to do?  (Esc to exit)',
 			options,
