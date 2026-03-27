@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { today } from './dailyState';
 
 // ESM modules don't have __dirname built in, so we derive it from the current
 // file's URL. This ensures the data folder is always relative to this file,
@@ -22,11 +23,6 @@ interface TimeLog {
 interface DayRecord {
   date: string;
   stamps: Stamp[];
-}
-
-// Returns today's date as YYYY-MM-DD (ISO format, easy to compare as a string)
-function today(): string {
-  return new Date().toISOString().slice(0, 10);
 }
 
 // Returns the current time as HH:MM (24-hour, zero-padded)
@@ -94,8 +90,9 @@ function archiveDay(date: string, stamps: Stamp[]): void {
   }
 }
 
-// Called on every CLI boot. If the stored date is not today, the CLI is being
-// opened on a new day — archive the previous day's stamps then wipe the log.
+// Called when the stamp command is used. If the stored date is not today,
+// the CLI is being used on a new day — archive the previous day's stamps
+// then wipe the log.
 export function clearIfNewDay(): void {
   const log = readLog();
   if (log.date !== today()) {
