@@ -1,12 +1,9 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { join } from 'path';
 import { today, currentTime } from './dailyState';
+import { esmDirname } from './paths';
 
-// ESM modules don't have __dirname built in, so we derive it from the current
-// file's URL. This ensures the data folder is always relative to this file,
-// not the directory you happen to be in when you run the CLI.
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const __dirname = esmDirname(import.meta.url);
 const dataDir = join(__dirname, '..', 'data');
 const logFile = join(dataDir, 'timelog.json');
 

@@ -1,9 +1,9 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { join } from 'path';
 import { today, currentTime } from './dailyState';
+import { esmDirname } from './paths';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const __dirname = esmDirname(import.meta.url);
 const stateFile = join(__dirname, '..', 'data', 'day-plan.json');
 
 export interface Task {

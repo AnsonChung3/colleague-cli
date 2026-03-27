@@ -1,9 +1,9 @@
 import { intro, multiselect, outro, isCancel } from '@clack/prompts';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { join } from 'path';
 import { today, createDailyState } from '../utils/dailyState';
+import { esmDirname } from '../utils/paths';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const __dirname = esmDirname(import.meta.url);
 const state = createDailyState<string[]>(
   join(__dirname, '..', 'data', 'todo-state.json'),
   () => [],
