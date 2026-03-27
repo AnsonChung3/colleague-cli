@@ -23,7 +23,7 @@ program.action(async () => {
 
 	if (onBoot) {
 		await defaultTask();
-		return;
+		// Fall through to the menu loop after the task completes or is aborted
 	}
 
 	// Build once — descriptions come from the program so they stay in sync
