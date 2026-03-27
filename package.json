@@ -6,7 +6,8 @@
 		"colleague": "./index.ts"
 	},
 	"scripts": {
-		"start": "tsx index.ts"
+		"start": "tsx index.ts",
+		"relink": "bash scripts/relink.sh"
 	},
 	"dependencies": {
 		"@clack/prompts": "^0.9.0",
