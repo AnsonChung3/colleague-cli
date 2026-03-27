@@ -1,4 +1,13 @@
 import { intro, multiselect, outro, isCancel } from '@clack/prompts';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import { today, createDailyState } from '../utils/dailyState';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const state = createDailyState<string[]>(
+  join(__dirname, '..', 'data', 'todo-state.json'),
+  () => [],
+);
 
 const items = [
   { value: '1', label: 'Review pull requests' },
@@ -9,11 +18,14 @@ const items = [
 ];
 
 export async function todo() {
+  state.clearIfNewDay();
+
   intro('My Todo List');
 
   const done = await multiselect({
     message: 'Space to tick, Enter to confirm:',
     options: items,
+    initialValues: state.getData(), // restore ticks from earlier in the day
     required: false,
   });
 
@@ -21,6 +33,8 @@ export async function todo() {
     outro('Cancelled.');
     return;
   }
+
+  state.setData(done as string[]);
 
   const count = (done as string[]).length;
   const remaining = items.length - count;
