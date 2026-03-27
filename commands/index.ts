@@ -4,7 +4,7 @@ import { todo } from './todo';
 import { stamp } from './stamp';
 import { dayPlan } from './dayPlan';
 import { mealTimes } from './mealTimes';
-import { makeCompletionAction } from './completion';
+import { makeCompletionAction } from '../internal/completion';
 
 export { todo as defaultTask };
 
