@@ -24,7 +24,8 @@ export async function registerCommands(program: Command) {
 	handlers.set('stamp', async () => {
 		const label = await text({ message: 'Stamp label (leave blank to view today\'s stamps):' });
 		if (isCancel(label)) return;
-		stamp(label.trim() || undefined, label.trim() ? {} : { list: true });
+		const trimmed = (label ?? '').trim();
+		stamp(trimmed || undefined, trimmed ? {} : { list: true });
 	});
 
 	try {
