@@ -1,20 +1,12 @@
 #!/usr/bin/env tsx
 import { Command } from 'commander';
 import { intro, confirm, outro, isCancel } from '@clack/prompts';
-import { todo } from './commands/todo';
+import { registerCommands, defaultTask } from './commands/index';
 
 const program = new Command();
-
 program.name('colleague').description('Personal CLI').version('1.0.0');
 
-program.command('todo').description('Interactive todo list').action(todo);
-
-try {
-  const { registerPrivateCommands } = await import('./commands/private/index');
-  registerPrivateCommands(program);
-} catch {
-  // private commands not present
-}
+await registerCommands(program);
 
 program.action(async () => {
 	intro('Hey! Good to see you.');
@@ -30,7 +22,7 @@ program.action(async () => {
 	}
 
 	if (startTodo) {
-		await todo();
+		await defaultTask();
 	} else {
 		outro('Alright, see you later.');
 	}
