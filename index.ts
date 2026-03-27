@@ -11,17 +11,17 @@ await registerCommands(program);
 program.action(async () => {
 	intro('Hey! Good to see you.');
 
-	const startTodo = await confirm({
+	const onBoot = await confirm({
 		message: 'Do you want to start ticking off your todo list?',
 		initialValue: true,
 	});
 
-	if (isCancel(startTodo)) {
+	if (isCancel(onBoot)) {
 		outro('See you later.');
 		return;
 	}
 
-	if (startTodo) {
+	if (onBoot) {
 		await defaultTask();
 	} else {
 		outro('Alright, see you later.');
