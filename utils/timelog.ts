@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import { today } from './dailyState';
+import { today, currentTime } from './dailyState';
 
 // ESM modules don't have __dirname built in, so we derive it from the current
 // file's URL. This ensures the data folder is always relative to this file,
@@ -23,12 +23,6 @@ interface TimeLog {
 interface DayRecord {
   date: string;
   stamps: Stamp[];
-}
-
-// Returns the current time as HH:MM (24-hour, zero-padded)
-function currentTime(): string {
-  const d = new Date();
-  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 }
 
 // Reads the log file from disk. If it doesn't exist yet, returns a fresh log
