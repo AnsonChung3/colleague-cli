@@ -27,8 +27,33 @@ colleague <command>
 | `stamp [note]` | Log a timestamped note; `--list` shows today's stamps |
 | `day-plan` | Conversational day planner — add tasks, set meal times, plan up to 3 days ahead |
 | `meal-times` | Set meal time reminders for today; surfaces as prompts during any CLI interaction |
+| `gmail` | Shows unread emails from the last 7 days — mark as read directly from the CLI, or ignore locally (hides from the list without touching Gmail) |
 
 > **Note on `todo`:** the todo list is the default task that runs on boot. It ships with placeholder items as a demo — swap them out in `commands/todo.ts` for your own list, or replace it entirely by changing the `defaultTask` export in `commands/index.ts`.
+
+---
+
+## Screenshots
+
+### Startup
+
+![Default task at startup](<assets/01-default task at the start.jpg>)
+
+### Gmail
+
+![Gmail credentials setup](assets/02-credentials.jpg)
+
+![Checking unread emails](<assets/02-check unread emails.jpg>)
+
+![Marking emails as read](<assets/02-mark unread emails.jpg>)
+
+### Day planning
+
+![Choose day](assets/03-dayplan-choose-day.jpg)
+
+![Day plan note](assets/03-dayplan-note.jpg)
+
+---
 
 ### Private commands
 
