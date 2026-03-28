@@ -35,7 +35,11 @@ export async function registerCommands(program: Command) {
 		stamp(trimmed || undefined, trimmed ? {} : { list: true });
 	});
 
-	program.command('day-plan').description('Plan your day interactively').action(dayPlan);
+	program
+		.command('day-plan')
+		.description('Plan your day interactively')
+		.option('-c, --check [offset]', 'Review and tick off tasks (1=tomorrow, 2=day after)')
+		.action(dayPlan);
 	handlers.set('day-plan', dayPlan);
 
 	program.command('meal-times').description('Set meal time reminders for today').action(mealTimes);

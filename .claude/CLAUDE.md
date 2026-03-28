@@ -20,7 +20,8 @@ commands/
   index.ts                  Command registry; exports handlers map + defaultTask
   todo.ts                   Daily checklist (resets per day)
   stamp.ts                  Timestamped note logger
-  dayPlan.ts                3-day planner (today to today+2)
+  dayPlan.ts                3-day planner (today to today+2); exports formatDate
+  dayPlanCheck.ts           --check flag flow: interactive checklist (today) or read-only note (tomorrow/day after)
   mealTimes.ts              Meal time reminder setup
   listUnread.ts             Gmail unread viewer + mark-as-read
   private/                  Personal commands — gitignored, auto-registered if present

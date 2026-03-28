@@ -3,6 +3,7 @@ import { allowedDates, evictOldPlans, getPlan, savePlan, emptyPlan } from '../ut
 import type { DayPlan } from '../utils/dayPlanState';
 import { today } from '../utils/dailyState';
 import { collectMealTimesFlow } from './mealTimes';
+import { checkDayFlow } from './dayPlanCheck';
 
 // Parses 'task one', 'task two' format into an array.
 // Falls back to treating the whole input as a single task if no quotes are used.
@@ -15,12 +16,19 @@ function parseTasks(input: string): string[] {
 }
 
 // Formats a YYYY-MM-DD string into a readable label e.g. "Thu 27 Mar"
-function formatDate(dateStr: string): string {
+export function formatDate(dateStr: string): string {
   const d = new Date(dateStr + 'T00:00:00'); // T00:00:00 avoids timezone shifting the date
   return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
 }
 
-export async function dayPlan() {
+export async function dayPlan(options: { check?: string | boolean } = {}) {
+  if (options.check !== undefined) {
+    const raw = typeof options.check === 'string' ? parseInt(options.check, 10) : 0;
+    const offset = (raw === 1 || raw === 2 ? raw : 0) as 0 | 1 | 2;
+    await checkDayFlow(offset);
+    return;
+  }
+
   evictOldPlans();
 
   const [d0, d1, d2] = allowedDates();
