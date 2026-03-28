@@ -44,7 +44,7 @@ data/                       Runtime data — gitignored. DO NOT read files here;
   day-plan.json             3-day plans storage
   email-dismissed.json      Locally dismissed email UIDs (7-day TTL)
   gmail-credentials.json    Gmail app password — gitignored
-  history/                  Quarterly stamp archives (YYYY-QQQ.json)
+  history/                  Quarterly stamp archives (YYYY-MMM-MMM.json)
 ```
 
 ---
@@ -66,7 +66,7 @@ data/                       Runtime data — gitignored. DO NOT read files here;
 
 ### Boot (no args)
 
-`index.ts` → `internal/boot.ts` → greeting → optional todo prompt → menu loop
+`index.ts` → `internal/boot.ts` → greeting → defalt task prompt → menu loop
 Each menu tick calls `runTimeChecks()` (`utils/timeChecks.ts`) for meal reminders before showing the select.
 
 ### Command dispatch
