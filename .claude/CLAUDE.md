@@ -20,7 +20,7 @@ commands/
   index.ts                  Command registry; exports handlers map + defaultTask
   todo.ts                   Daily checklist (resets per day)
   stamp.ts                  Timestamped note logger
-  dayPlan.ts                3-day planner (today ±1)
+  dayPlan.ts                3-day planner (today to today+2)
   mealTimes.ts              Meal time reminder setup
   listUnread.ts             Gmail unread viewer + mark-as-read
   private/                  Personal commands — gitignored, auto-registered if present
@@ -85,7 +85,7 @@ Quarter mapping: Mar–May (Q1), Jun–Aug (Q2), Sep–Nov (Q3), Dec–Feb (Q4 s
 
 ### Day plan
 `dayPlan.ts` / `mealTimes.ts` → `utils/dayPlanState.ts` → `data/day-plan.json`
-3-day rolling window: entries outside today ±1 are evicted on load.
+3-day rolling window: entries outside today +2 are evicted on load.
 
 ---
 
