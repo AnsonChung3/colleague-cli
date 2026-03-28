@@ -51,39 +51,45 @@ data/                       Runtime data — gitignored. DO NOT read files here;
 
 ## Tech Stack
 
-| Layer | Choice |
-|---|---|
-| Language | TypeScript 5, ESM modules |
-| Runner | `tsx` 4 — no compile step |
-| CLI framework | `commander` 12 |
-| Interactive prompts | `@clack/prompts` 0.9 |
-| Gmail IMAP | `imapflow` 1.2 |
-| Module resolution | `bundler` (tsconfig) |
+| Layer               | Choice                    |
+| ------------------- | ------------------------- |
+| Language            | TypeScript 5, ESM modules |
+| Runner              | `tsx` 4 — no compile step |
+| CLI framework       | `commander` 12            |
+| Interactive prompts | `@clack/prompts` 0.9      |
+| Gmail IMAP          | `imapflow` 1.2            |
+| Module resolution   | `bundler` (tsconfig)      |
 
 ---
 
 ## Key Data Flows
 
 ### Boot (no args)
+
 `index.ts` → `internal/boot.ts` → greeting → optional todo prompt → menu loop
 Each menu tick calls `runTimeChecks()` (`utils/timeChecks.ts`) for meal reminders before showing the select.
 
 ### Command dispatch
+
 `index.ts` registers all commands from `commands/index.ts` (which merges public + private registries).
 Each command is a named export: `(program: Command) => void`.
 
 ### State persistence pattern
+
 All stateful utils use `createDailyState(filename, defaults)` from `utils/dailyState.ts`.
 The factory reads `data/<filename>.json`, resets to defaults if the stored date ≠ today, then returns `{ get, set }` helpers.
 
 ### Stamp + quarterly archive
+
 `stamp.ts` → `utils/timelog.ts` → appends to `data/timelog.json` → on new day detection, archives previous day to `data/history/YYYY-QQQ.json`
 Quarter mapping: Mar–May (Q1), Jun–Aug (Q2), Sep–Nov (Q3), Dec–Feb (Q4 spans year boundary).
 
 ### Gmail flow
+
 `listUnread.ts` → `utils/imap.ts` → checks `data/gmail-credentials.json` (prompts setup if missing) → connects to `imap.gmail.com:993` → fetches UIDs for last 7 days → filters against `email-dismissed.json` → multiselect → mark read or dismiss locally.
 
 ### Day plan
+
 `dayPlan.ts` / `mealTimes.ts` → `utils/dayPlanState.ts` → `data/day-plan.json`
 3-day rolling window: entries outside today +2 are evicted on load.
 
@@ -92,16 +98,22 @@ Quarter mapping: Mar–May (Q1), Jun–Aug (Q2), Sep–Nov (Q3), Dec–Feb (Q4 s
 ## Data Schemas
 
 ### `data/timelog.json`
+
 ```ts
-{ date: string; entries: Array<{ time: string; label: string }> }
+{
+	date: string;
+	entries: Array<{ time: string; label: string }>;
+}
 ```
 
 ### `data/todo-state.json`
+
 ```ts
 { date: string; checked: string[] }  // checked = array of item labels
 ```
 
 ### `data/day-plan.json`
+
 ```ts
 {
   [dateKey: string]: {
@@ -113,13 +125,18 @@ Quarter mapping: Mar–May (Q1), Jun–Aug (Q2), Sep–Nov (Q3), Dec–Feb (Q4 s
 ```
 
 ### `data/email-dismissed.json`
+
 ```ts
-Array<{ uid: string; dismissedAt: string }>  // dismissedAt ISO string; TTL 7 days
+Array<{ uid: string; dismissedAt: string }>; // dismissedAt ISO string; TTL 7 days
 ```
 
 ### `data/gmail-credentials.json`
+
 ```ts
-{ user: string; password: string }  // password = Gmail app password
+{
+	user: string;
+	password: string;
+} // password = Gmail app password
 ```
 
 ---
@@ -134,9 +151,9 @@ Array<{ uid: string; dismissedAt: string }>  // dismissedAt ISO string; TTL 7 da
 
 ## Config Files
 
-| File | Purpose |
-|---|---|
-| `package.json` | Bin entry (`index.ts`), deps, scripts |
-| `tsconfig.json` | ES2022 target, ESNext modules, bundler resolution, strict |
-| `.gitignore` | Excludes `node_modules/`, `commands/private/`, `data/` |
-| `scripts/relink.sh` | Re-links CLI + appends completion to `~/.bashrc` |
+| File                | Purpose                                                   |
+| ------------------- | --------------------------------------------------------- |
+| `package.json`      | Bin entry (`index.ts`), deps, scripts                     |
+| `tsconfig.json`     | ES2022 target, ESNext modules, bundler resolution, strict |
+| `.gitignore`        | Excludes `node_modules/`, `commands/private/`, `data/`    |
+| `scripts/relink.sh` | Re-links CLI + appends completion to `~/.bashrc`          |
