@@ -15,6 +15,10 @@ export { todo as defaultTask };
 export type CommandHandler = () => void | Promise<void>;
 export const handlers = new Map<string, CommandHandler>();
 
+// Names of private commands, populated by commands/private/index.ts.
+// Used by internal/help.ts to group private commands separately in help output.
+export const privateCommandNames = new Set<string>();
+
 export async function registerCommands(program: Command) {
 	program.command('todo').description('Interactive todo list').action(todo);
 	handlers.set('todo', todo);
