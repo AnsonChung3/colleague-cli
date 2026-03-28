@@ -4,6 +4,7 @@ import { todo } from './todo';
 import { stamp } from './stamp';
 import { dayPlan } from './dayPlan';
 import { mealTimes } from './mealTimes';
+import { listUnread } from './listUnread';
 import { makeCompletionAction } from '../internal/completion';
 
 export { todo as defaultTask };
@@ -35,6 +36,9 @@ export async function registerCommands(program: Command) {
 
 	program.command('meal-times').description('Set meal time reminders for today').action(mealTimes);
 	handlers.set('meal-times', mealTimes);
+
+	program.command('list-unread').description('Review unread emails for the week').action(listUnread);
+	handlers.set('list-unread', listUnread);
 
 	try {
 		const { registerPrivateCommands } = await import('./private/index');
