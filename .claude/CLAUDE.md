@@ -21,8 +21,13 @@ commands/
   public/                   Public command implementations
     todo.ts                 Daily checklist (resets per day)
     stamp.ts                Timestamped note logger
-    dayPlan.ts              3-day planner (today to today+2); exports formatDate
-    dayPlanCheck.ts         --check flag flow: interactive checklist (today) or read-only note (tomorrow/day after)
+    day-plan/               Day planner module
+      dayPlan.ts            Entry point; flag dispatch (--check, --edit, --add, --remove); exports formatDate
+      dayPlanCheck.ts       --check flow: interactive checklist (today) or read-only note (tomorrow/day after)
+      dayPlanAdd.ts         --add flow: add tasks to today's plan
+      dayPlanEdit.ts        --edit flow + shared runAddLoop; full edit menu (add/edit/remove/view)
+      dayPlanRemove.ts      --remove flow: multiselect task removal for today
+      dayPlanUtils.ts       Shared helpers: formatDate, parseTasks
     mealTimes.ts            Meal time reminder setup
     listUnread.ts           Gmail unread viewer + mark-as-read
   private/                  Personal commands — gitignored, auto-registered if present
@@ -92,8 +97,16 @@ Quarter mapping: Mar–May (Q1), Jun–Aug (Q2), Sep–Nov (Q3), Dec–Feb (Q4 s
 
 ### Day plan
 
-`dayPlan.ts` / `mealTimes.ts` → `utils/dayPlanState.ts` → `data/day-plan.json`
+`commands/public/day-plan/dayPlan.ts` dispatches to flag-specific flows:
+- `--check` → `dayPlanCheck.ts`: interactive multiselect (today) or read-only note (tomorrow/day after)
+- `--add` → `dayPlanAdd.ts`: add loop via shared `runAddLoop` from `dayPlanEdit.ts`
+- `--edit` → `dayPlanEdit.ts`: full edit menu (add / edit single task / remove / view)
+- `--remove` → `dayPlanRemove.ts`: multiselect removal for today
+- No flag → interactive date picker → meal setup (`mealTimes.ts`, today only) → `dayPlanEditFlow`
+
+All flows → `utils/dayPlanState.ts` → `data/day-plan.json`
 3-day rolling window: entries outside today +2 are evicted on load.
+`dayPlanUtils.ts` exports `formatDate` (YYYY-MM-DD → "Thu 27 Mar") and `parseTasks` (quoted or plain input → string[]).
 
 ---
 
