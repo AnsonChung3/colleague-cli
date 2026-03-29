@@ -2,7 +2,7 @@ import { Command } from 'commander';
 import { text, isCancel } from '@clack/prompts';
 import { todo } from './public/todo';
 import { stamp } from './public/stamp';
-import { dayPlan } from './public/dayPlan';
+import { dayPlan } from './public/day-plan/dayPlan';
 import { mealTimes } from './public/mealTimes';
 import { listUnread } from './public/listUnread';
 import { makeCompletionAction } from '../internal/completion';
@@ -39,6 +39,9 @@ export async function registerCommands(program: Command) {
 		.command('day-plan [offset]')
 		.description('Plan your day interactively')
 		.option('-c, --check', 'Review and tick off tasks — accepts 0 (today, default), 1 (tomorrow), 2 (day after)')
+		.option('-e, --edit', 'Enter edit mode for today\'s plan')
+		.option('-a, --add', 'Add tasks to today\'s plan')
+		.option('-r, --remove', 'Remove tasks from today\'s plan')
 		.action(dayPlan);
 	handlers.set('day-plan', dayPlan);
 
