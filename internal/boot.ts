@@ -35,8 +35,6 @@ export function registerBootAction(program: Command) {
 			}));
 
 		while (true) {
-			const rows = process.stdout.rows ?? 24;
-			process.stdout.write('\n'.repeat(rows) + `\x1b[${rows}A`);
 			await runTimeChecks();
 
 			const choice = await select({
@@ -48,6 +46,9 @@ export function registerBootAction(program: Command) {
 				outro('See you later.');
 				return;
 			}
+
+			const rows = process.stdout.rows ?? 24;
+			process.stdout.write('\n'.repeat(rows) + `\x1b[${rows}A`);
 
 			const handler = handlers.get(choice as string);
 			if (handler) await handler();
