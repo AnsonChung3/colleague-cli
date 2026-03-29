@@ -21,11 +21,11 @@ export function formatDate(dateStr: string): string {
   return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
 }
 
-export async function dayPlan(options: { check?: string | boolean } = {}) {
-  if (options.check !== undefined) {
-    const raw = typeof options.check === 'string' ? parseInt(options.check, 10) : 0;
-    const offset = (raw === 1 || raw === 2 ? raw : 0) as 0 | 1 | 2;
-    await checkDayFlow(offset);
+export async function dayPlan(offset?: string, options: { check?: boolean } = {}) {
+if (options.check) {
+    const raw = parseInt(offset ?? '0', 10);
+    const n = (raw === 1 || raw === 2 ? raw : 0) as 0 | 1 | 2;
+    await checkDayFlow(n);
     return;
   }
 

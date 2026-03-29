@@ -36,9 +36,9 @@ export async function registerCommands(program: Command) {
 	});
 
 	program
-		.command('day-plan')
+		.command('day-plan [offset]')
 		.description('Plan your day interactively')
-		.option('-c, --check [offset]', 'Review and tick off tasks (1=tomorrow, 2=day after)')
+		.option('-c, --check', 'Review and tick off tasks (1=tomorrow, 2=day after)')
 		.action(dayPlan);
 	handlers.set('day-plan', dayPlan);
 
