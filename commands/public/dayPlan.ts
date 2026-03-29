@@ -21,11 +21,17 @@ export function formatDate(dateStr: string): string {
   return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
 }
 
+const VALID_CHECK_OFFSETS = ['0', '1', '2'] as const;
+type CheckOffset = typeof VALID_CHECK_OFFSETS[number];
+
 export async function dayPlan(offset?: string, options: { check?: boolean } = {}) {
-if (options.check) {
+  if (options.check) {
+    if (offset !== undefined && !(VALID_CHECK_OFFSETS as readonly string[]).includes(offset)) {
+      log.error(`Invalid argument: "${offset}". Accepted: 0 (today), 1 (tomorrow), 2 (day after).`);
+      process.exit(1);
+    }
     const raw = parseInt(offset ?? '0', 10);
-    const n = (raw === 1 || raw === 2 ? raw : 0) as 0 | 1 | 2;
-    await checkDayFlow(n);
+    await checkDayFlow((raw === 1 || raw === 2 ? raw : 0) as 0 | 1 | 2);
     return;
   }
 
