@@ -1,7 +1,7 @@
 import { intro, select, text, confirm, note, outro, isCancel, log } from '@clack/prompts';
-import { allowedDates, evictOldPlans, getPlan, savePlan, emptyPlan } from '../utils/dayPlanState';
-import type { DayPlan } from '../utils/dayPlanState';
-import { today } from '../utils/dailyState';
+import { allowedDates, evictOldPlans, getPlan, savePlan, emptyPlan } from '../../utils/dayPlanState';
+import type { DayPlan } from '../../utils/dayPlanState';
+import { today } from '../../utils/dailyState';
 import { collectMealTimesFlow } from './mealTimes';
 import { checkDayFlow } from './dayPlanCheck';
 

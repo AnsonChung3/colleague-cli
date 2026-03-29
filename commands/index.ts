@@ -1,10 +1,10 @@
 import { Command } from 'commander';
 import { text, isCancel } from '@clack/prompts';
-import { todo } from './todo';
-import { stamp } from './stamp';
-import { dayPlan } from './dayPlan';
-import { mealTimes } from './mealTimes';
-import { listUnread } from './listUnread';
+import { todo } from './public/todo';
+import { stamp } from './public/stamp';
+import { dayPlan } from './public/dayPlan';
+import { mealTimes } from './public/mealTimes';
+import { listUnread } from './public/listUnread';
 import { makeCompletionAction } from '../internal/completion';
 
 export { todo as defaultTask };
