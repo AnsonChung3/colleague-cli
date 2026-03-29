@@ -159,3 +159,13 @@ Array<{ uid: string; dismissedAt: string }>; // dismissedAt ISO string; TTL 7 da
 | `tsconfig.json`     | ES2022 target, ESNext modules, bundler resolution, strict |
 | `.gitignore`        | Excludes `node_modules/`, `commands/private/`, `data/`    |
 | `scripts/relink.sh` | Re-links CLI + appends completion to `~/.bashrc`          |
+
+---
+
+## Knowledge Base
+
+`.claude/knowledge/` — researched findings, not derivable from reading the code.
+
+| File                   | Contents                                                                 |
+| ---------------------- | ------------------------------------------------------------------------ |
+| `clack-internals.md`   | `@clack/prompts` & `@clack/core` internal mechanics; boot-menu select glitch root cause & fix |
