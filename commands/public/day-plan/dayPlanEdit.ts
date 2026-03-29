@@ -14,7 +14,7 @@ export async function runAddLoop(tasks: Task[]): Promise<boolean> {
   while (true) {
     const input = await text({
       message: 'Add tasks',
-      placeholder: "'Fix bug', 'Review PR'  —  leave empty to finish",
+      placeholder: "'Fix bug', 'Review PR'  —  leave empty and press Enter to exit",
     });
     if (isCancel(input)) return false;
     const parsed = parseTasks((input ?? '') as string);
