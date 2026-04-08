@@ -1,8 +1,8 @@
 import { intro, confirm, text, outro, isCancel, log } from '@clack/prompts';
-import { today } from '../utils/dailyState';
-import { currentTime } from '../utils/dailyState';
-import { getPlan, savePlan, emptyPlan } from '../utils/dayPlanState';
-import type { Meal } from '../utils/dayPlanState';
+import { today } from '../../utils/dailyState';
+import { currentTime } from '../../utils/dailyState';
+import { getPlan, savePlan, emptyPlan } from '../../utils/dayPlanState';
+import type { Meal } from '../../utils/dayPlanState';
 
 // Accepts HHMM (4-digit) or HH:MM and normalises to HH:MM.
 // Returns null if the input is not a valid time.

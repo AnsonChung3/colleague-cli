@@ -1,11 +1,11 @@
 import { intro, multiselect, select, outro, isCancel, log, spinner, confirm, text, note } from '@clack/prompts';
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
-import { esmDirname } from '../utils/paths';
-import { credentialsExist, saveCredentials, getRecentUnreadEmails, markEmailsAsRead } from '../utils/imap';
+import { esmDirname } from '../../utils/paths';
+import { credentialsExist, saveCredentials, getRecentUnreadEmails, markEmailsAsRead } from '../../utils/imap';
 
 const __dirname = esmDirname(import.meta.url);
-const dismissedFile = join(__dirname, '..', 'data', 'email-dismissed.json');
+const dismissedFile = join(__dirname, '..', '..', 'data', 'email-dismissed.json');
 
 interface DismissedEntry {
   uid: number;

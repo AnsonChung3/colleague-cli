@@ -5,6 +5,8 @@ import { runTimeChecks } from '../utils/timeChecks';
 
 export function registerBootAction(program: Command) {
 	program.action(async () => {
+		const rows = process.stdout.rows ?? 24;
+		process.stdout.write('\n'.repeat(rows) + `\x1b[${rows}A`);
 		intro('Hey! Good to see you.');
 
 		const onBoot = await confirm({
@@ -44,6 +46,9 @@ export function registerBootAction(program: Command) {
 				outro('See you later.');
 				return;
 			}
+
+			const rows = process.stdout.rows ?? 24;
+			process.stdout.write('\n'.repeat(rows) + `\x1b[${rows}A`);
 
 			const handler = handlers.get(choice as string);
 			if (handler) await handler();

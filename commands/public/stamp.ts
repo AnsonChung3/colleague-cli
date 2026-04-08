@@ -1,5 +1,5 @@
 import { log } from '@clack/prompts';
-import { addStamp, getStamps, clearIfNewDay } from '../utils/timelog';
+import { addStamp, getStamps, clearIfNewDay } from '../../utils/timelog';
 
 // Commander passes the positional argument as the first param and any flags
 // as the second. label is undefined if you run `colleague stamp --list`
