@@ -1,31 +1,6 @@
-import { select, text, multiselect, confirm, note, outro, isCancel, log } from '@clack/prompts';
+import { select, text, multiselect, confirm, outro, isCancel, log } from '@clack/prompts';
 import { getPlan, savePlan, emptyPlan } from '../../../utils/dayPlanState';
-import type { Task } from '../../../utils/dayPlanState';
-import { formatDate, parseTasks } from './dayPlanUtils';
-
-function showTaskList(tasks: Task[], date: string): void {
-  const taskList = tasks.map(t => `${t.done ? '✓' : '□'} ${t.label}`).join('\n');
-  note(taskList, `Plan for ${formatDate(date)}`);
-}
-
-// Shared add loop — used by this flow and dayPlanAdd.ts.
-// Mutates the tasks array in place. Returns false if the user cancelled (Escape).
-export async function runAddLoop(tasks: Task[]): Promise<boolean> {
-  while (true) {
-    const input = await text({
-      message: 'Add tasks',
-      placeholder: "'Fix bug', 'Review PR'  —  leave empty and press Enter to exit",
-    });
-    if (isCancel(input)) return false;
-    const parsed = parseTasks((input ?? '') as string);
-    if (parsed.length === 0) break;
-    for (const label of parsed) {
-      tasks.push({ id: String(tasks.length + 1), label, done: false });
-    }
-    log.success(`Added ${parsed.length} task${parsed.length !== 1 ? 's' : ''}.`);
-  }
-  return true;
-}
+import { showTaskList, runAddLoop } from './dayPlanUtils';
 
 export async function dayPlanEditFlow(date: string): Promise<void> {
   const plan = getPlan(date) ?? emptyPlan();

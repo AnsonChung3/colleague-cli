@@ -1,8 +1,7 @@
-import { intro, note, outro, log } from '@clack/prompts';
+import { intro, outro, log } from '@clack/prompts';
 import { evictOldPlans, getPlan, savePlan, emptyPlan } from '../../../utils/dayPlanState';
 import { today } from '../../../utils/dailyState';
-import { runAddLoop } from './dayPlanEdit';
-import { formatDate } from './dayPlanUtils';
+import { formatDate, showTaskList, runAddLoop } from './dayPlanUtils';
 
 export async function dayPlanAddFlow(): Promise<void> {
   evictOldPlans();
@@ -17,8 +16,7 @@ export async function dayPlanAddFlow(): Promise<void> {
   savePlan(date, plan);
 
   if (plan.tasks.length > 0) {
-    const taskList = plan.tasks.map((t, i) => `${i + 1}. ${t.label}`).join('\n');
-    note(taskList, `Plan for ${formatDate(date)}`);
+    showTaskList(plan.tasks, date);
   } else {
     log.info('No tasks added.');
   }

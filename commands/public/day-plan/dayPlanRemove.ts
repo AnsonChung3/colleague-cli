@@ -1,7 +1,7 @@
-import { intro, multiselect, note, outro, isCancel, log } from '@clack/prompts';
+import { intro, multiselect, outro, isCancel, log } from '@clack/prompts';
 import { evictOldPlans, getPlan, savePlan } from '../../../utils/dayPlanState';
 import { today } from '../../../utils/dailyState';
-import { formatDate } from './dayPlanUtils';
+import { formatDate, showTaskList } from './dayPlanUtils';
 
 export async function dayPlanRemoveFlow(): Promise<void> {
   evictOldPlans();
