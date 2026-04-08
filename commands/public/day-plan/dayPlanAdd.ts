@@ -1,7 +1,7 @@
 import { intro, outro, log } from '@clack/prompts';
 import { evictOldPlans, getPlan, savePlan, emptyPlan } from '../../../utils/dayPlanState';
 import { today } from '../../../utils/dailyState';
-import { formatDate, showTaskList, runAddLoop } from './dayPlanUtils';
+import { showTaskList, runAddLoop } from './dayPlanUtils';
 
 export async function dayPlanAddFlow(): Promise<void> {
   evictOldPlans();

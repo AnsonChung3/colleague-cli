@@ -1,6 +1,6 @@
-import { intro, multiselect, note, outro, isCancel, log } from '@clack/prompts';
+import { intro, multiselect, outro, isCancel, log } from '@clack/prompts';
 import { evictOldPlans, getPlan, savePlan, allowedDates } from '../../../utils/dayPlanState';
-import { formatDate } from './dayPlanUtils';
+import { formatDate, showTaskList } from './dayPlanUtils';
 
 export async function checkDayFlow(offset: 0 | 1 | 2): Promise<void> {
   evictOldPlans();
@@ -17,8 +17,7 @@ export async function checkDayFlow(offset: 0 | 1 | 2): Promise<void> {
   }
 
   if (offset > 0) {
-    const taskList = plan.tasks.map(t => `${t.done ? '✓' : '○'} ${t.label}`).join('\n');
-    note(taskList, `${formatDate(date)} (read-only)`);
+    showTaskList(plan.tasks, date, `${formatDate(date)} (read-only)`);
     outro('');
     return;
   }

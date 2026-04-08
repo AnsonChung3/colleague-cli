@@ -18,9 +18,10 @@ export function parseTasks(input: string): string[] {
 }
 
 // Renders the full task list as a clack note, using ✓/□ markers for done state.
-export function showTaskList(tasks: Task[], date: string): void {
+// Optionally override the note title (defaults to "Plan for {date}").
+export function showTaskList(tasks: Task[], date: string, title?: string): void {
   const taskList = tasks.map(t => `${t.done ? '✓' : '□'} ${t.label}`).join('\n');
-  note(taskList, `Plan for ${formatDate(date)}`);
+  note(taskList, title ?? `Plan for ${formatDate(date)}`);
 }
 
 // Shared add loop — used by dayPlanAdd.ts and dayPlanEdit.ts.
