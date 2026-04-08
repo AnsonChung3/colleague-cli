@@ -25,9 +25,9 @@ commands/
       dayPlan.ts            Entry point; flag dispatch (--check, --edit, --add, --remove); exports formatDate
       dayPlanCheck.ts       --check flow: interactive checklist (today) or read-only note (tomorrow/day after)
       dayPlanAdd.ts         --add flow: add tasks to today's plan
-      dayPlanEdit.ts        --edit flow + shared runAddLoop; full edit menu (add/edit/remove/view)
+      dayPlanEdit.ts        --edit flow; full edit menu (check/add/edit/remove/view)
       dayPlanRemove.ts      --remove flow: multiselect task removal for today
-      dayPlanUtils.ts       Shared helpers: formatDate, parseTasks
+      dayPlanUtils.ts       Shared helpers: formatDate, parseTasks, showTaskList, runAddLoop
     mealTimes.ts            Meal time reminder setup
     listUnread.ts           Gmail unread viewer + mark-as-read
   private/                  Personal commands — gitignored, auto-registered if present
@@ -99,7 +99,7 @@ Quarter mapping: Mar–May (Q1), Jun–Aug (Q2), Sep–Nov (Q3), Dec–Feb (Q4 s
 
 `commands/public/day-plan/dayPlan.ts` dispatches to flag-specific flows:
 - `--check` → `dayPlanCheck.ts`: interactive multiselect (today) or read-only note (tomorrow/day after)
-- `--add` → `dayPlanAdd.ts`: add loop via shared `runAddLoop` from `dayPlanEdit.ts`
+- `--add` → `dayPlanAdd.ts`: add loop via shared `runAddLoop` from `dayPlanUtils.ts`
 - `--edit` → `dayPlanEdit.ts`: full edit menu (add / edit single task / remove / view)
 - `--remove` → `dayPlanRemove.ts`: multiselect removal for today
 - No flag → interactive date picker → meal setup (`mealTimes.ts`, today only) → `dayPlanEditFlow`
@@ -132,9 +132,8 @@ All flows → `utils/dayPlanState.ts` → `data/day-plan.json`
 ```ts
 {
   [dateKey: string]: {
-    tasks: string[];
-    meals?: { breakfast?: string; lunch?: string; dinner?: string };
-    acknowledged?: { breakfast?: boolean; lunch?: boolean; dinner?: boolean }
+    tasks: Array<{ id: string; label: string; done: boolean }>;
+    meals: Array<{ label: string; time: string; acknowledged: boolean }>;
   }
 }
 ```
