@@ -50,6 +50,7 @@ export async function dayPlanEditFlow(date: string): Promise<void> {
     const action = await select({
       message: 'What would you like to do?',
       options: [
+        { value: 'check', label: 'Check off tasks' },
         { value: 'add', label: 'Add tasks' },
         { value: 'edit', label: 'Edit a task' },
         { value: 'remove', label: 'Remove tasks' },
@@ -58,7 +59,24 @@ export async function dayPlanEditFlow(date: string): Promise<void> {
     });
     if (isCancel(action)) { outro('Cancelled.'); return; }
 
-    if (action === 'add') {
+    if (action === 'check') {
+      const remaining = plan.tasks.filter(t => !t.done);
+      if (remaining.length === 0) {
+        log.info('All tasks already done.');
+      } else {
+        const result = await multiselect({
+          message: 'Space to tick, Enter to confirm:',
+          options: remaining.map(t => ({ value: t.id, label: t.label })),
+          required: false,
+        });
+        if (isCancel(result)) { outro('Cancelled.'); return; }
+        const newlyDoneIds = new Set(result as string[]);
+        plan.tasks.forEach(t => { if (newlyDoneIds.has(t.id)) t.done = true; });
+        savePlan(date, plan);
+        const doneCount = plan.tasks.filter(t => t.done).length;
+        log.success(`${doneCount}/${plan.tasks.length} task${plan.tasks.length !== 1 ? 's' : ''} done.`);
+      }
+    } else if (action === 'add') {
       const ok = await runAddLoop(plan.tasks);
       if (!ok) { outro('Cancelled.'); return; }
       savePlan(date, plan);
