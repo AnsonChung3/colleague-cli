@@ -23,18 +23,25 @@ export async function checkDayFlow(offset: 0 | 1 | 2): Promise<void> {
     return;
   }
 
-  // Today — interactive checklist
+  // Today — interactive checklist (already-done tasks are excluded)
+  const alreadyDone = plan.tasks.filter(t => t.done);
+  const remaining = plan.tasks.filter(t => !t.done);
+
+  if (remaining.length === 0) {
+    outro(`${alreadyDone.length}/${plan.tasks.length} task${plan.tasks.length !== 1 ? 's' : ''} done.`);
+    return;
+  }
+
   const result = await multiselect({
     message: 'Space to tick, Enter to confirm:',
-    options: plan.tasks.map(t => ({ value: t.id, label: t.label })),
-    initialValues: plan.tasks.filter(t => t.done).map(t => t.id),
+    options: remaining.map(t => ({ value: t.id, label: t.label })),
     required: false,
   });
 
   if (isCancel(result)) { outro('Cancelled.'); return; }
 
-  const doneIds = new Set(result as string[]);
-  plan.tasks.forEach(t => { t.done = doneIds.has(t.id); });
+  const newlyDoneIds = new Set(result as string[]);
+  plan.tasks.forEach(t => { if (newlyDoneIds.has(t.id)) t.done = true; });
   savePlan(date, plan);
 
   const doneCount = plan.tasks.filter(t => t.done).length;

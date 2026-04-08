@@ -4,7 +4,7 @@ import type { Task } from '../../../utils/dayPlanState';
 import { formatDate, parseTasks } from './dayPlanUtils';
 
 function showTaskList(tasks: Task[], date: string): void {
-  const taskList = tasks.map((t, i) => `${i + 1}. ${t.label}`).join('\n');
+  const taskList = tasks.map(t => `${t.done ? '✓' : '□'} ${t.label}`).join('\n');
   note(taskList, `Plan for ${formatDate(date)}`);
 }
 
