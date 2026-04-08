@@ -1,7 +1,7 @@
 import { intro, multiselect, outro, isCancel, log } from '@clack/prompts';
 import { evictOldPlans, getPlan, savePlan } from '../../../utils/dayPlanState';
 import { today } from '../../../utils/dailyState';
-import { formatDate, showTaskList } from './dayPlanUtils';
+import { showTaskList } from './dayPlanUtils';
 
 export async function dayPlanRemoveFlow(): Promise<void> {
   evictOldPlans();
@@ -12,12 +12,20 @@ export async function dayPlanRemoveFlow(): Promise<void> {
 
   if (!plan || plan.tasks.length === 0) {
     log.info('No tasks planned for today.');
-    process.exit(0);
+    outro('');
+    return;
+  }
+
+  const removable = plan.tasks.filter(t => !t.done);
+  if (removable.length === 0) {
+    log.info('All tasks are checked off — nothing to remove.');
+    outro('');
+    return;
   }
 
   const toRemove = await multiselect({
     message: 'Select tasks to remove:',
-    options: plan.tasks.map(t => ({ value: t.id, label: t.label })),
+    options: removable.map(t => ({ value: t.id, label: t.label })),
     required: false,
   });
   if (isCancel(toRemove)) { outro('Cancelled.'); return; }
@@ -27,8 +35,7 @@ export async function dayPlanRemoveFlow(): Promise<void> {
   savePlan(date, plan);
 
   if (plan.tasks.length > 0) {
-    const taskList = plan.tasks.map((t, i) => `${i + 1}. ${t.label}`).join('\n');
-    note(taskList, `Plan for ${formatDate(date)}`);
+    showTaskList(plan.tasks, date);
   } else {
     log.info('No tasks remaining.');
   }

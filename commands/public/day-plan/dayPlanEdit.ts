@@ -75,12 +75,13 @@ export async function dayPlanEditFlow(date: string): Promise<void> {
         }
       }
     } else if (action === 'remove') {
-      if (plan.tasks.length === 0) {
-        log.warn('No tasks to remove.');
+      const removable = plan.tasks.filter(t => !t.done);
+      if (removable.length === 0) {
+        log.warn(plan.tasks.length === 0 ? 'No tasks to remove.' : 'All tasks are checked off — nothing to remove.');
       } else {
         const toRemove = await multiselect({
           message: 'Select tasks to remove:',
-          options: plan.tasks.map(t => ({ value: t.id, label: t.label })),
+          options: removable.map(t => ({ value: t.id, label: t.label })),
           required: false,
         });
         if (isCancel(toRemove)) { outro('Cancelled.'); return; }
