@@ -2,3 +2,4 @@ node_modules/
 commands/private/
 data/
 test/
+.claude/private/
