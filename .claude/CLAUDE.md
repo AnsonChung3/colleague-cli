@@ -31,7 +31,7 @@ commands/
     mealTimes.ts            Meal time reminder setup
     listUnread.ts           Gmail unread viewer + mark-as-read
   private/                  Personal commands — gitignored, auto-registered if present
-                            See commands/private/CLAUDE.md for details (local-only)
+                            See .claude/private/CLAUDE.md for details (local-only)
 internal/
   boot.ts                   Default action (no args): greeting, todo prompt, menu loop
   completion.ts             Bash tab completion generator (reads live command tree)
