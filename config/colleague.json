@@ -1,0 +1,6 @@
+{
+  "defaultTask": {
+    "enabled": true,
+    "lineup": ["todo"]
+  }
+}

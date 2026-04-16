@@ -10,6 +10,12 @@
 - `colleague` on auto complete doesn't add a trailing space
 - looks like there is still terminal UI glitch, but it's inconsistant and low priority
 
+## Other designs
+- gamify the whole programme, maybe a game mode setting toggle
+- on game mode, user assign points to tasks, and completing them gets the score
+- use the daily login bonus design from mobile games
+- probably also means need some milestone style badges or vanity things that can be used with the cli and is visible
+
 ## Internal
 - allow disable default task
 - allow an array of task to be a default task 'line up', select trigger based on time
@@ -50,4 +56,6 @@
 import { exec } from 'child_process';
 exec('shutdown /s /t 7200 /f');
 ```
-
+## new command: remind me
+- keep a persistant list of on going projects or misc tasks that doesn't need handling immediately
+- when the 'I don't know what I am doing next' mood hits, take a look
