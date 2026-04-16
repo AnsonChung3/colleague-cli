@@ -3,3 +3,5 @@ commands/private/
 data/
 test/
 .claude/private/
+// config json file is intentionally ignored after pushing to remote
+config/colleague.json
