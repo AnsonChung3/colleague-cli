@@ -7,8 +7,6 @@ import { mealTimes } from './public/mealTimes';
 import { listUnread } from './public/listUnread';
 import { makeCompletionAction } from '../internal/completion';
 
-export { todo as defaultTask };
-
 // Invokable command handlers, keyed by command name.
 // index.ts reads this map to run whichever command the user picks
 // from the interactive menu. Private commands register into this same map.

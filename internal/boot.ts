@@ -1,7 +1,8 @@
 import { Command } from 'commander';
-import { intro, confirm, select, outro, isCancel } from '@clack/prompts';
-import { defaultTask, handlers } from '../commands/index';
+import { intro, select, outro, isCancel } from '@clack/prompts';
+import { handlers } from '../commands/index';
 import { runTimeChecks } from '../utils/timeChecks';
+import { getConfig } from '../utils/configState';
 
 export function registerBootAction(program: Command) {
 	program.action(async () => {
@@ -9,19 +10,12 @@ export function registerBootAction(program: Command) {
 		process.stdout.write('\n'.repeat(rows) + `\x1b[${rows}A`);
 		intro('Hey! Good to see you.');
 
-		const onBoot = await confirm({
-			message: 'Do you want to start ticking off your todo list?',
-			initialValue: true,
-		});
-
-		if (isCancel(onBoot)) {
-			outro('See you later.');
-			return;
-		}
-
-		if (onBoot) {
-			await defaultTask();
-			// Fall through to the menu loop after the task completes or is aborted
+		const config = getConfig();
+		if (config.defaultTask.enabled && config.defaultTask.lineup.length > 0) {
+			for (const name of config.defaultTask.lineup) {
+				const handler = handlers.get(name);
+				if (handler) await handler();
+			}
 		}
 
 		// Built from program.commands so descriptions stay in sync automatically
