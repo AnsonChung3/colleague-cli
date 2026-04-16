@@ -27,9 +27,8 @@ colleague <command>
 | `stamp [note]` | Log a timestamped note; `--list` shows today's stamps |
 | `day-plan` | Conversational day planner — add tasks, set meal times, plan up to 3 days ahead |
 | `meal-times` | Set meal time reminders for today; surfaces as prompts during any CLI interaction |
-| `gmail` | Shows unread emails from the last 7 days — mark as read directly from the CLI, or ignore locally (hides from the list without touching Gmail) |
-
-> **Note on `todo`:** the todo list is the default task that runs on boot. It ships with placeholder items as a demo — swap them out in `commands/todo.ts` for your own list, or replace it entirely by changing the `defaultTask` export in `commands/index.ts`.
+| `list-unread` | Shows unread emails from the last 7 days — mark as read directly from the CLI, or ignore locally (hides from the list without touching Gmail) |
+| `config` | View and manage CLI settings — configure which commands run on boot and in what order |
 
 ---
 
@@ -94,31 +93,42 @@ A `commands/private/` folder exists for personal commands that should never be c
 
 ```
 my-colleague/
-├── index.ts                  Entry point — wires up commander, registers commands, parses
-├── commands/                 User-facing commands
-│   ├── index.ts              Command registry and handlers map
-│   ├── todo.ts               Daily todo list with persistent tick state
-│   ├── stamp.ts              Timestamped note logger
-│   ├── dayPlan.ts            Day planner
-│   ├── mealTimes.ts          Meal time setup
-│   └── private/              Personal private commands (gitignored)
-├── internal/                 Infrastructure — not user-callable
-│   ├── boot.ts               Default action, greeting, and menu loop
-│   └── completion.ts         Bash tab completion script generator
-├── utils/                    Shared utilities
-│   ├── dailyState.ts         today(), currentTime(), createDailyState() factory
-│   ├── dayPlanState.ts       Day plan file I/O and meal acknowledgement helpers
-│   ├── timelog.ts            Timestamp log with quarterly archiving
-│   └── timeChecks.ts         Time-sensitive check runner (called before every menu)
+├── index.ts                    Entry point — wires up commander, registers commands, parses
+├── commands/
+│   ├── index.ts                Command registry and handlers map
+│   ├── public/
+│   │   ├── todo.ts             Daily todo list with persistent tick state
+│   │   ├── stamp.ts            Timestamped note logger
+│   │   ├── config.ts           Settings menu — default task lineup, toggle, reorder
+│   │   ├── mealTimes.ts        Meal time setup
+│   │   ├── listUnread.ts       Gmail unread viewer + mark-as-read
+│   │   └── day-plan/           Day planner module
+│   │       ├── dayPlan.ts      Entry point; flag dispatch
+│   │       ├── dayPlanCheck.ts --check flow
+│   │       ├── dayPlanAdd.ts   --add flow
+│   │       ├── dayPlanEdit.ts  --edit flow
+│   │       ├── dayPlanRemove.ts --remove flow
+│   │       └── dayPlanUtils.ts Shared helpers
+│   └── private/                Personal private commands (gitignored)
+├── internal/                   Infrastructure — not user-callable
+│   ├── boot.ts                 Default action, greeting, and menu loop
+│   ├── completion.ts           Bash tab completion script generator
+│   └── help.ts                 Custom help formatter (groups public vs private)
+├── utils/                      Shared utilities
+│   ├── configState.ts          Config file reader/writer
+│   ├── dailyState.ts           today(), currentTime(), createDailyState() factory
+│   ├── dayPlanState.ts         Day plan file I/O and meal acknowledgement helpers
+│   ├── timelog.ts              Timestamp log with quarterly archiving
+│   └── timeChecks.ts           Time-sensitive check runner (called before every menu)
+├── config/
+│   └── colleague.json          Persisted CLI settings (committed)
 ├── scripts/
-│   └── relink.sh             Re-links the CLI and refreshes shell completion
-└── data/                     Runtime data files (gitignored)
-    ├── timelog.json           Today's stamps
-    ├── todo-state.json        Today's todo tick state
-    ├── ritual-state.json      Today's start ritual progress
-    ├── end-ritual-state.json  Today's end ritual progress
-    ├── day-plan.json          Up to 3 days of day plans
-    └── history/               Quarterly stamp archives
+│   └── relink.sh               Re-links the CLI and refreshes shell completion
+└── data/                       Runtime data files (gitignored)
+    ├── timelog.json             Today's stamps
+    ├── todo-state.json          Today's todo tick state
+    ├── day-plan.json            Up to 3 days of day plans
+    └── history/                 Quarterly stamp archives
 ```
 
 ---

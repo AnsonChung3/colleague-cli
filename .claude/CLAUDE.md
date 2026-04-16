@@ -15,12 +15,13 @@ A personal command-line companion built with **Node.js + TypeScript**, run direc
 ## Directory Map
 
 ```
-index.ts                    CLI entry — wires commander, registers commands
+index.ts                    CLI entry — wires commander, registers commands, configures help
 commands/
-  index.ts                  Command registry; exports handlers map + defaultTask
+  index.ts                  Command registry; exports handlers map + privateCommandNames
   public/                   Public command implementations
     todo.ts                 Daily checklist (resets per day)
     stamp.ts                Timestamped note logger
+    config.ts               Settings menu — default task lineup, toggle, reorder
     day-plan/               Day planner module
       dayPlan.ts            Entry point; flag dispatch (--check, --edit, --add, --remove); exports formatDate
       dayPlanCheck.ts       --check flow: interactive checklist (today) or read-only note (tomorrow/day after)
@@ -33,9 +34,11 @@ commands/
   private/                  Personal commands — gitignored, auto-registered if present
                             See .claude/private/CLAUDE.md for details (local-only)
 internal/
-  boot.ts                   Default action (no args): greeting, todo prompt, menu loop
+  boot.ts                   Default action (no args): greeting, config-driven default task, menu loop
   completion.ts             Bash tab completion generator (reads live command tree)
+  help.ts                   Custom help formatter — groups public vs private commands
 utils/
+  configState.ts            Config file reader/writer — getConfig(), setConfig(); reads config/colleague.json
   dailyState.ts             Daily state factory — today(), currentTime(), createDailyState()
   dayPlanState.ts           Day plan file I/O; 3-day window enforcement; meal acknowledgement
   timelog.ts                Timestamped log with quarterly archiving
@@ -43,6 +46,8 @@ utils/
   imap.ts                   ImapFlow wrapper — Gmail auth, fetch unread, mark as read
   paths.ts                  ESM __dirname helper
   weeklyState.ts            Weekly state manager (ISO 8601)
+config/
+  colleague.json            Persisted CLI config (committed; not gitignored)
 scripts/
   relink.sh                 Re-links CLI globally + refreshes bash completion
 data/                       Runtime data — gitignored. DO NOT read files here; use the schemas in the Data Schemas section instead.
@@ -73,7 +78,7 @@ data/                       Runtime data — gitignored. DO NOT read files here;
 
 ### Boot (no args)
 
-`index.ts` → `internal/boot.ts` → greeting → defalt task prompt → menu loop
+`index.ts` → `internal/boot.ts` → greeting → reads `config.defaultTask` → runs each handler in `lineup` (if `enabled`) → menu loop
 Each menu tick calls `runTimeChecks()` (`utils/timeChecks.ts`) for meal reminders before showing the select.
 
 ### Command dispatch
@@ -153,11 +158,24 @@ Array<{ uid: string; dismissedAt: string }>; // dismissedAt ISO string; TTL 7 da
 } // password = Gmail app password
 ```
 
+### `config/colleague.json`
+
+```ts
+{
+  defaultTask: {
+    enabled: boolean;   // whether the lineup runs on boot
+    lineup: string[];   // ordered list of command names to run on boot
+  }
+}
+```
+
+Default (used when file is absent): `{ defaultTask: { enabled: true, lineup: ['todo'] } }`
+
 ---
 
 ## Extension Points
 
-- **Add a command:** Create `commands/<name>.ts`, export `(program: Command) => void`, register in `commands/index.ts`.
+- **Add a command:** Create `commands/public/<name>.ts`, export `(program: Command) => void`, register in `commands/index.ts`.
 - **Add a private command:** Same pattern under `commands/private/` — auto-gitignored.
 - **Add a utility:** `utils/` for shared logic; `internal/` for boot/infrastructure only.
 
@@ -165,12 +183,13 @@ Array<{ uid: string; dismissedAt: string }>; // dismissedAt ISO string; TTL 7 da
 
 ## Config Files
 
-| File                | Purpose                                                   |
-| ------------------- | --------------------------------------------------------- |
-| `package.json`      | Bin entry (`index.ts`), deps, scripts                     |
-| `tsconfig.json`     | ES2022 target, ESNext modules, bundler resolution, strict |
-| `.gitignore`        | Excludes `node_modules/`, `commands/private/`, `data/`    |
-| `scripts/relink.sh` | Re-links CLI + appends completion to `~/.bashrc`          |
+| File                     | Purpose                                                   |
+| ------------------------ | --------------------------------------------------------- |
+| `package.json`           | Bin entry (`index.ts`), deps, scripts                     |
+| `tsconfig.json`          | ES2022 target, ESNext modules, bundler resolution, strict |
+| `.gitignore`             | Excludes `node_modules/`, `commands/private/`, `data/`    |
+| `scripts/relink.sh`      | Re-links CLI + appends completion to `~/.bashrc`          |
+| `config/colleague.json`  | Persisted CLI settings — committed to repo                |
 
 ---
 
