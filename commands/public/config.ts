@@ -65,11 +65,20 @@ async function defaultTaskSubmenu(getCommandNames: () => string[]) {
           required: false,
         });
         if (!isCancel(selected) && (selected as string[]).length > 0) {
+          const wasEmpty = lineup.length === 0;
           setConfig({
             ...cfg,
-            defaultTask: { ...cfg.defaultTask, lineup: [...lineup, ...(selected as string[])] },
+            defaultTask: {
+              ...cfg.defaultTask,
+              enabled: wasEmpty ? true : cfg.defaultTask.enabled,
+              lineup: [...lineup, ...(selected as string[])],
+            },
           });
-          log.success(`Added ${(selected as string[]).join(', ')} to lineup.`);
+          log.success(
+            wasEmpty
+              ? `Added ${(selected as string[]).join(', ')} to lineup. Default task auto-enabled.`
+              : `Added ${(selected as string[]).join(', ')} to lineup.`,
+          );
         }
       }
     } else if (choice === 'remove') {
