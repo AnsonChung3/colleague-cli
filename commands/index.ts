@@ -5,6 +5,7 @@ import { stamp } from './public/stamp';
 import { dayPlan } from './public/day-plan/dayPlan';
 import { mealTimes } from './public/mealTimes';
 import { listUnread } from './public/listUnread';
+import { makeConfigAction } from './public/config';
 import { makeCompletionAction } from '../internal/completion';
 
 // Invokable command handlers, keyed by command name.
@@ -48,6 +49,10 @@ export async function registerCommands(program: Command) {
 
 	program.command('list-unread').description('Review unread emails for the week').action(listUnread);
 	handlers.set('list-unread', listUnread);
+
+	const configAction = makeConfigAction(() => [...handlers.keys()].filter(n => n !== 'config'));
+	program.command('config').description('View and manage CLI configuration').action(configAction);
+	handlers.set('config', configAction);
 
 	try {
 		const { registerPrivateCommands } = await import('./private/index');
