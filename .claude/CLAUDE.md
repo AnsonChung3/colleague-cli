@@ -83,8 +83,7 @@ Each menu tick calls `runTimeChecks()` (`utils/timeChecks.ts`) for meal reminder
 
 ### Command dispatch
 
-`index.ts` registers all commands from `commands/index.ts` (which merges public + private registries).
-Each command is a named export: `(program: Command) => void`.
+`index.ts` calls `registerCommands(program)` from `commands/index.ts`, which wires every command directly: each command module exports a plain handler function (e.g. `export async function todo() { ... }`), and `commands/index.ts` calls `program.command(...).action(handler)` plus `handlers.set(name, handler)` for each one. Private commands register the same way via `commands/private/index.ts`'s `registerPrivateCommands` (through an `addPrivate()` helper), merged in afterwards.
 
 ### State persistence pattern
 
@@ -146,7 +145,7 @@ All flows → `utils/dayPlanState.ts` → `data/day-plan.json`
 ### `data/email-dismissed.json`
 
 ```ts
-Array<{ uid: string; dismissedAt: string }>; // dismissedAt ISO string; TTL 7 days
+Array<{ uid: number; dismissedAt: string }>; // dismissedAt = YYYY-MM-DD; entries older than 7 days are dropped on load
 ```
 
 ### `data/gmail-credentials.json`
@@ -175,8 +174,8 @@ Default (used when file is absent): `{ defaultTask: { enabled: true, lineup: ['t
 
 ## Extension Points
 
-- **Add a command:** Create `commands/public/<name>.ts`, export `(program: Command) => void`, register in `commands/index.ts`.
-- **Add a private command:** Same pattern under `commands/private/` — auto-gitignored.
+- **Add a command:** Create `commands/public/<name>.ts`, export a plain async handler function, register it in `commands/index.ts` (`program.command(...).action(handler)` + `handlers.set(...)`).
+- **Add a private command:** Same shape under `commands/private/`, registered via the `addPrivate()` helper in `commands/private/index.ts` — auto-gitignored.
 - **Add a utility:** `utils/` for shared logic; `internal/` for boot/infrastructure only.
 
 ---

@@ -48,6 +48,19 @@
 - on choose, show unread subject and sender the same was as default inbox
 - allow choosing label and keep watch for 7 days
 
+### bugs
+- observation, not a bug yet: after relinking, the first run of list-unread takes quite a bit of time to load, but it could be because it's the initial loading, needds to try out for longer to find out
+- once email is loaded, the UI visual effects looks like the default is choose all in INBOX. Add hint text behind the mail box label, something like `[ ] INBOX - select all mails from this label`
+- if no email choose from permanent watch labels, if falls through to exit the submenu and goes back main menu. The correct behaviour should be when no email is selected to do any action in the permanent watch labels, fetch for 'default' watch labels to see if any unread, and follow through the process
+- when no 'other' labels were chosen, it goes directly to 'Cancelled', there is no hint text showing
+- performance issue: old mail boxes have lots of labels, that makes the loading time much longer than ideal. Change the default watch state to all non-INBOX labels to 'ignore'. With hint text to remind the user that only INBOX is watched.
+- there is a weird lag between the title of the command 'Unread Emails' and the 'Fetching emails...' spinner
+- move to trash works but incredibly slow
+- fetching from a named label feels slow
+- but second time doing any action of previously connected/fetched label is noticably quicker. Investigate. If it is something to do with initial connection, see if there are any option to improve performance on the initial fetch/connection. Otherwise, add hint text
+
+
+
 ## new command: count
 - allow create new named counters
 - allow remembering historic/frequently used counters
