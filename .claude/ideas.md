@@ -12,6 +12,7 @@
 - update screenshots in README
 - put in real URL for the repo in README
 - update the maintenance guide, the relink npm script includes source ~/.bashrc
+- `utils/weeklyState.ts` appears to be dead code — not imported anywhere in the codebase. Potentially added as dead code and I didn't pick up on it when I first approved it. Decide whether to wire it up to something or remove it.
 
 
 ## Other designs
