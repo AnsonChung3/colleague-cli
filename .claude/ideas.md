@@ -1,5 +1,11 @@
 # Ideas for future implementation
 
+## Docs vs code drift
+- `data/timelog.json` schema in CLAUDE.md says `{ date: string; entries: Array<{ time: string; label: string }> }`. Actual code (`utils/timelog.ts`) uses `{ date: string; stamps: Stamp[] }` — field is `stamps`, not `entries`.
+- `data/todo-state.json` schema in CLAUDE.md says `{ date: string; checked: string[] }`. Actual shape, from the generic `createDailyState` factory (`utils/dailyState.ts`), is `{ date: string; data: string[] }` — field is `data`, not `checked`. Applies to every file built with `createDailyState`, not just `todo-state.json`.
+- "State persistence pattern" section in CLAUDE.md says the factory "reads `data/<filename>.json`, resets to defaults if the stored date ≠ today, then returns `{ get, set }` helpers." Actually: callers pass a full path, not a bare filename; it does not auto-reset on read (callers must explicitly call `clearIfNewDay()`); returned helpers are `{ clearIfNewDay, getData, setData }`, not `{ get, set }`. `utils/weeklyState.ts` mirrors this same corrected shape (`clearIfNewWeek, getData, setData`).
+- `.gitignore` table in CLAUDE.md's Config Files section says it excludes `node_modules/, commands/private/, data/` — it also excludes `test/` and `.claude/private/`, which aren't listed.
+
 ## UX/UI Bugs
 - UI glitch persist across a few commands which no new lines happened, i.e. entering a submenu via main will bring the text display to the top of the window which is the correct and expected beavhiour, but the the UI glitch persists. Read details in .claude/knowledge/clack-internals.md for more context and details from previous time when I was fixing a similar, if not identical, UI bug.
 - UI behaviour when pressing enter, or escape, on empty stamp label input is inconsistant. Sometimes it behaves correctly, i.e. press enter to show existing entries form current day, escape to exit. When it behaves buggy, it appears similar to the UI new line glitch, it will show no visual response, an require a second press to show the correct behaviour. Needs investigation
