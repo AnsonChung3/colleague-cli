@@ -13,6 +13,7 @@
 - put in real URL for the repo in README
 - update the maintenance guide, the relink npm script includes source ~/.bashrc
 - `utils/weeklyState.ts` appears to be dead code — not imported anywhere in the codebase. Potentially added as dead code and I didn't pick up on it when I first approved it. Decide whether to wire it up to something or remove it.
+- Clarify in docs whether adding a private command requires `npm run relink`: it doesn't, for the command to work — `commands/private/index.ts` is dynamically imported fresh on every `colleague` run (no compile step, tsx runs source directly), so a new private command is picked up on the next invocation with no relink. Relink is only needed to refresh bash tab-completion, since `internal/completion.ts` writes a static snapshot of command names into `~/.bashrc` at the time `colleague completion --install` runs — a new private command won't tab-complete until that's regenerated.
 
 
 ## Other designs

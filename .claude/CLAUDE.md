@@ -47,7 +47,7 @@ utils/
   paths.ts                  ESM __dirname helper
   weeklyState.ts            Weekly state manager (ISO 8601)
 config/
-  colleague.json            Persisted CLI config (committed; not gitignored)
+  colleague.json            Persisted CLI config (gitignored — can contain private command names, see below)
 scripts/
   relink.sh                 Re-links CLI globally + refreshes bash completion
 data/                       Runtime data — gitignored. DO NOT read files here; use the schemas in the Data Schemas section instead.
@@ -84,6 +84,19 @@ Each menu tick calls `runTimeChecks()` (`utils/timeChecks.ts`) for meal reminder
 ### Command dispatch
 
 `index.ts` calls `registerCommands(program)` from `commands/index.ts`, which wires every command directly: each command module exports a plain handler function (e.g. `export async function todo() { ... }`), and `commands/index.ts` calls `program.command(...).action(handler)` plus `handlers.set(name, handler)` for each one. Private commands register the same way via `commands/private/index.ts`'s `registerPrivateCommands` (through an `addPrivate()` helper), merged in afterwards.
+
+### Config menu & private commands
+
+`makeConfigAction` (`commands/public/config.ts`) builds its "Add to lineup" options from
+`[...handlers.keys()]` — the same shared map that `registerPrivateCommands` populates. Private
+registration happens during `registerCommands()`, before `program.parse()`, so by the time the
+config menu runs, `handlers` already contains private command names alongside public ones. The
+submenu does not filter by `privateCommandNames`, so a private command can be added to
+`defaultTask.lineup` like any other.
+
+This is why `config/colleague.json` is gitignored rather than committed: once a private command
+name is written into `lineup`, committing the file would leak that command's existence into the
+public repo — defeating the point of `commands/private/` being gitignored in the first place.
 
 ### State persistence pattern
 
@@ -188,7 +201,7 @@ Default (used when file is absent): `{ defaultTask: { enabled: true, lineup: ['t
 | `tsconfig.json`          | ES2022 target, ESNext modules, bundler resolution, strict |
 | `.gitignore`             | Excludes `node_modules/`, `commands/private/`, `data/`    |
 | `scripts/relink.sh`      | Re-links CLI + appends completion to `~/.bashrc`          |
-| `config/colleague.json`  | Persisted CLI settings — committed to repo                |
+| `config/colleague.json`  | Persisted CLI settings — gitignored, local only            |
 
 ---
 

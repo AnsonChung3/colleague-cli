@@ -58,6 +58,8 @@ colleague <command>
 
 A `commands/private/` folder exists for personal commands that should never be committed. It is gitignored. Anything registered there appears in the interactive menu automatically when present, but is invisible in the public repo.
 
+This extends to your settings: `config/colleague.json` is gitignored too, so if you add a private command to your default boot lineup via `colleague config`, that choice — and the private command's name — stays on your machine and never reaches the public repo.
+
 ---
 
 ## Adding a new command
