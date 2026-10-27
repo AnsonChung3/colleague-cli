@@ -47,7 +47,7 @@ utils/
   paths.ts                  ESM __dirname helper
   weeklyState.ts            Weekly state manager (ISO 8601)
 config/
-  colleague.json            Persisted CLI config (committed; not gitignored)
+  colleague.json            Persisted CLI config (gitignored — can contain private command names, see below)
 scripts/
   relink.sh                 Re-links CLI globally + refreshes bash completion
 data/                       Runtime data — gitignored. DO NOT read files here; use the schemas in the Data Schemas section instead.
@@ -83,8 +83,20 @@ Each menu tick calls `runTimeChecks()` (`utils/timeChecks.ts`) for meal reminder
 
 ### Command dispatch
 
-`index.ts` registers all commands from `commands/index.ts` (which merges public + private registries).
-Each command is a named export: `(program: Command) => void`.
+`index.ts` calls `registerCommands(program)` from `commands/index.ts`, which wires every command directly: each command module exports a plain handler function (e.g. `export async function todo() { ... }`), and `commands/index.ts` calls `program.command(...).action(handler)` plus `handlers.set(name, handler)` for each one. Private commands register the same way via `commands/private/index.ts`'s `registerPrivateCommands` (through an `addPrivate()` helper), merged in afterwards.
+
+### Config menu & private commands
+
+`makeConfigAction` (`commands/public/config.ts`) builds its "Add to lineup" options from
+`[...handlers.keys()]` — the same shared map that `registerPrivateCommands` populates. Private
+registration happens during `registerCommands()`, before `program.parse()`, so by the time the
+config menu runs, `handlers` already contains private command names alongside public ones. The
+submenu does not filter by `privateCommandNames`, so a private command can be added to
+`defaultTask.lineup` like any other.
+
+This is why `config/colleague.json` is gitignored rather than committed: once a private command
+name is written into `lineup`, committing the file would leak that command's existence into the
+public repo — defeating the point of `commands/private/` being gitignored in the first place.
 
 ### State persistence pattern
 
@@ -122,7 +134,7 @@ All flows → `utils/dayPlanState.ts` → `data/day-plan.json`
 ```ts
 {
 	date: string;
-	entries: Array<{ time: string; label: string }>;
+	stamps: Array<{ time: string; label: string }>;
 }
 ```
 
@@ -146,7 +158,7 @@ All flows → `utils/dayPlanState.ts` → `data/day-plan.json`
 ### `data/email-dismissed.json`
 
 ```ts
-Array<{ uid: string; dismissedAt: string }>; // dismissedAt ISO string; TTL 7 days
+Array<{ uid: number; dismissedAt: string }>; // dismissedAt = YYYY-MM-DD; entries older than 7 days are dropped on load
 ```
 
 ### `data/gmail-credentials.json`
@@ -175,8 +187,8 @@ Default (used when file is absent): `{ defaultTask: { enabled: true, lineup: ['t
 
 ## Extension Points
 
-- **Add a command:** Create `commands/public/<name>.ts`, export `(program: Command) => void`, register in `commands/index.ts`.
-- **Add a private command:** Same pattern under `commands/private/` — auto-gitignored.
+- **Add a command:** Create `commands/public/<name>.ts`, export a plain async handler function, register it in `commands/index.ts` (`program.command(...).action(handler)` + `handlers.set(...)`).
+- **Add a private command:** Same shape under `commands/private/`, registered via the `addPrivate()` helper in `commands/private/index.ts` — auto-gitignored.
 - **Add a utility:** `utils/` for shared logic; `internal/` for boot/infrastructure only.
 
 ---
@@ -187,9 +199,9 @@ Default (used when file is absent): `{ defaultTask: { enabled: true, lineup: ['t
 | ------------------------ | --------------------------------------------------------- |
 | `package.json`           | Bin entry (`index.ts`), deps, scripts                     |
 | `tsconfig.json`          | ES2022 target, ESNext modules, bundler resolution, strict |
-| `.gitignore`             | Excludes `node_modules/`, `commands/private/`, `data/`    |
+| `.gitignore`             | Excludes `node_modules/`, `commands/private/`, `data/`, `test/`, `.claude/private/` |
 | `scripts/relink.sh`      | Re-links CLI + appends completion to `~/.bashrc`          |
-| `config/colleague.json`  | Persisted CLI settings — committed to repo                |
+| `config/colleague.json`  | Persisted CLI settings — gitignored, local only            |
 
 ---
 

@@ -1,5 +1,10 @@
 # Ideas for future implementation
 
+## Docs vs code drift
+- `data/todo-state.json` schema in CLAUDE.md says `{ date: string; checked: string[] }`. Actual shape, from the generic `createDailyState` factory (`utils/dailyState.ts`), is `{ date: string; data: string[] }` — field is `data`, not `checked`. Applies to every file built with `createDailyState`, not just `todo-state.json`.
+- "State persistence pattern" section in CLAUDE.md says the factory "reads `data/<filename>.json`, resets to defaults if the stored date ≠ today, then returns `{ get, set }` helpers." Actually: callers pass a full path, not a bare filename; it does not auto-reset on read (callers must explicitly call `clearIfNewDay()`); returned helpers are `{ clearIfNewDay, getData, setData }`, not `{ get, set }`. `utils/weeklyState.ts` mirrors this same corrected shape (`clearIfNewWeek, getData, setData`).
+- Note: confirmed both the `data/todo-state.json` schema drift (above) and this "State persistence pattern" drift only concern the `todo` command — `createDailyState` is only ever instantiated in `commands/public/todo.ts`; everything else importing `dailyState.ts` just uses `today()`/`currentTime()`. Not fixing the docs for this yet since I won't be working on `todo` any time soon.
+
 ## UX/UI Bugs
 - UI glitch persist across a few commands which no new lines happened, i.e. entering a submenu via main will bring the text display to the top of the window which is the correct and expected beavhiour, but the the UI glitch persists. Read details in .claude/knowledge/clack-internals.md for more context and details from previous time when I was fixing a similar, if not identical, UI bug.
 - UI behaviour when pressing enter, or escape, on empty stamp label input is inconsistant. Sometimes it behaves correctly, i.e. press enter to show existing entries form current day, escape to exit. When it behaves buggy, it appears similar to the UI new line glitch, it will show no visual response, an require a second press to show the correct behaviour. Needs investigation
@@ -12,6 +17,8 @@
 - update screenshots in README
 - put in real URL for the repo in README
 - update the maintenance guide, the relink npm script includes source ~/.bashrc
+- `utils/weeklyState.ts` appears to be dead code — not imported anywhere in the codebase. Potentially added as dead code and I didn't pick up on it when I first approved it. Decide whether to wire it up to something or remove it.
+- Clarify in docs whether adding a private command requires `npm run relink`: it doesn't, for the command to work — `commands/private/index.ts` is dynamically imported fresh on every `colleague` run (no compile step, tsx runs source directly), so a new private command is picked up on the next invocation with no relink. Relink is only needed to refresh bash tab-completion, since `internal/completion.ts` writes a static snapshot of command names into `~/.bashrc` at the time `colleague completion --install` runs — a new private command won't tab-complete until that's regenerated.
 
 
 ## Other designs
@@ -47,6 +54,19 @@
 - show label name with unread and number of
 - on choose, show unread subject and sender the same was as default inbox
 - allow choosing label and keep watch for 7 days
+
+### bugs
+- observation, not a bug yet: after relinking, the first run of list-unread takes quite a bit of time to load, but it could be because it's the initial loading, needds to try out for longer to find out
+- once email is loaded, the UI visual effects looks like the default is choose all in INBOX. Add hint text behind the mail box label, something like `[ ] INBOX - select all mails from this label`
+- if no email choose from permanent watch labels, if falls through to exit the submenu and goes back main menu. The correct behaviour should be when no email is selected to do any action in the permanent watch labels, fetch for 'default' watch labels to see if any unread, and follow through the process
+- when no 'other' labels were chosen, it goes directly to 'Cancelled', there is no hint text showing
+- performance issue: old mail boxes have lots of labels, that makes the loading time much longer than ideal. Change the default watch state to all non-INBOX labels to 'ignore'. With hint text to remind the user that only INBOX is watched.
+- there is a weird lag between the title of the command 'Unread Emails' and the 'Fetching emails...' spinner
+- move to trash works but incredibly slow
+- fetching from a named label feels slow
+- but second time doing any action of previously connected/fetched label is noticably quicker. Investigate. If it is something to do with initial connection, see if there are any option to improve performance on the initial fetch/connection. Otherwise, add hint text
+
+
 
 ## new command: count
 - allow create new named counters

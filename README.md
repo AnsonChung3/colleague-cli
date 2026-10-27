@@ -58,13 +58,15 @@ colleague <command>
 
 A `commands/private/` folder exists for personal commands that should never be committed. It is gitignored. Anything registered there appears in the interactive menu automatically when present, but is invisible in the public repo.
 
+This extends to your settings: `config/colleague.json` is gitignored too, so if you add a private command to your default boot lineup via `colleague config`, that choice — and the private command's name — stays on your machine and never reaches the public repo.
+
 ---
 
 ## Adding a new command
 
 **Public command:**
 
-1. Create `commands/myCommand.ts` and export an async function:
+1. Create `commands/public/myCommand.ts` and export an async function:
    ```ts
    export async function myCommand() { ... }
    ```
@@ -79,13 +81,13 @@ A `commands/private/` folder exists for personal commands that should never be c
 **Private command:**
 
 1. Create `commands/private/myCommand.ts` with the same exported function shape
-2. Register it in `commands/private/index.ts`:
+2. Register it in `commands/private/index.ts` via the `addPrivate` helper:
    ```ts
    import { myCommand } from './myCommand';
 
-   program.command('my-command').description('...').action(myCommand);
-   handlers.set('my-command', myCommand);
+   addPrivate('my-command', 'What it does', myCommand);
    ```
+   This wires it into `program`, the `handlers` map, and `privateCommandNames` in one call.
 
 ---
 
@@ -119,15 +121,22 @@ my-colleague/
 │   ├── dailyState.ts           today(), currentTime(), createDailyState() factory
 │   ├── dayPlanState.ts         Day plan file I/O and meal acknowledgement helpers
 │   ├── timelog.ts              Timestamp log with quarterly archiving
-│   └── timeChecks.ts           Time-sensitive check runner (called before every menu)
+│   ├── timeChecks.ts           Time-sensitive check runner (called before every menu)
+│   ├── imap.ts                 ImapFlow wrapper — Gmail auth, fetch unread, mark as read
+│   ├── paths.ts                ESM __dirname helper
+│   └── weeklyState.ts          Weekly state manager (ISO 8601)
 ├── config/
 │   └── colleague.json          Persisted CLI settings (committed)
 ├── scripts/
 │   └── relink.sh               Re-links the CLI and refreshes shell completion
+├── test/
+│   └── test-commander.mjs      Ad-hoc commander.js scratch test (not wired to npm scripts)
 └── data/                       Runtime data files (gitignored)
     ├── timelog.json             Today's stamps
     ├── todo-state.json          Today's todo tick state
     ├── day-plan.json            Up to 3 days of day plans
+    ├── email-dismissed.json     Locally dismissed email UIDs (7-day TTL)
+    ├── gmail-credentials.json   Gmail app password
     └── history/                 Quarterly stamp archives
 ```
 
