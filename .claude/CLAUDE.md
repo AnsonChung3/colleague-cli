@@ -134,7 +134,7 @@ All flows → `utils/dayPlanState.ts` → `data/day-plan.json`
 ```ts
 {
 	date: string;
-	entries: Array<{ time: string; label: string }>;
+	stamps: Array<{ time: string; label: string }>;
 }
 ```
 
@@ -199,7 +199,7 @@ Default (used when file is absent): `{ defaultTask: { enabled: true, lineup: ['t
 | ------------------------ | --------------------------------------------------------- |
 | `package.json`           | Bin entry (`index.ts`), deps, scripts                     |
 | `tsconfig.json`          | ES2022 target, ESNext modules, bundler resolution, strict |
-| `.gitignore`             | Excludes `node_modules/`, `commands/private/`, `data/`    |
+| `.gitignore`             | Excludes `node_modules/`, `commands/private/`, `data/`, `test/`, `.claude/private/` |
 | `scripts/relink.sh`      | Re-links CLI + appends completion to `~/.bashrc`          |
 | `config/colleague.json`  | Persisted CLI settings — gitignored, local only            |
 
